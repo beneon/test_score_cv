@@ -1,0 +1,51 @@
+# move parameters here
+image_refence:
+  - region:
+      name: total
+      width: 1443
+      height: 2042
+      left: 0
+      top: 0
+  - region:
+      name: xuehao
+      width: 385
+      height: 259
+      left: 964
+      top: 231
+      v_block_start: 1
+      v_block_end: 10
+  - region:
+      name: v_ruler
+      width: 52
+      height: 1881
+      left: 1380
+      top: 231
+  - region:
+      name: h_ruler
+      width: 1302
+      height: 26
+      left: 46
+      top: 490
+      v_block_start: 11
+      v_block_end: 11
+  - region:
+      name: answer_region
+      width: 891
+      height: 1302
+      left: 46
+      top: 515
+      v_block_start: 12
+      v_block_end: 45
+  - region:
+      name: answer_subregion
+      questions: 1_5
+      width: 185
+      height:
+# hori block width: 25 px, interval 15 px
+# ruler block height 13 px, interval 13 px
+region_positions:
+  - region:
+      name: hori_ruler
+      # left and top are all percentage of entire image
+      left: 0.004
+      top: 0.011

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/test_score_cv.iml" filepath="$PROJECT_DIR$/.idea/test_score_cv.iml" />
+      <module fileurl="file://D:/SynologyDrive/med/co/test_scoreing_cv/.idea/test_scoreing_cv.iml" filepath="D:/SynologyDrive/med/co/test_scoreing_cv/.idea/test_scoreing_cv.iml" />
     </modules>
   </component>
 </project>
