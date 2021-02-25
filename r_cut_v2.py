@@ -5,23 +5,30 @@ import functools
 import matplotlib.pyplot as plt
 import cv2
 from region_cut import display_img_plt
+class ImageObj:
+    def __init__(self,img):
+        self.img = img
+        self.img_width = self.img.shape[1]
+        self.img_height = self.img.shape[0]
 
-img_file = os.path.join('dataset','version2.jpg')
-img_file = cv2.imread(img_file)
-# display_img_plt(img_file)
+    def display_image(self):
+        plt.imshow(self.img,cmap='gray')
 
-# get all the marking block
+class ImageFull(ImageObj):
+    def __init__(self,image_path:str):
+        assert os.path.exists(image_path)
+        self.image_path = os.path.split(image_path)[0]
+        self.image_filename = os.path.split(image_path)[1]
+        cwd = os.getcwd()
+        os.chdir(self.image_path)
+        img = cv2.imread(self.image_filename)
+        os.chdir(cwd)
+        super().__init__(img)
 
-img_gray = cv2.cvtColor(img_file,cv2.COLOR_BGR2GRAY)
-img_blur = cv2.GaussianBlur(img_gray,(5,5),0)
-_ret, img_thresh = cv2.threshold(img_blur,120,255,cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
-cnts = cv2.findContours(img_thresh.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-cnts = imutils.grab_contours(cnts)
-cnts_bounding = [cv2.boundingRect(c) for c in cnts]
-cnts_bounding_area = [b[2]*b[3] for b in cnts_bounding]
+
 
 class Lane2CntBBox:
-    def __init__(self,img,img_name='answer_sheet',left_pixel=0,top_pixel=0,left_padding=0,right_padding=0,compare_method='left-right'):
+    def __init__(self, img, img_name='answer_sheet', left_pixel=0, top_pixel=0, left_padding=0, right_padding=0, compare_method='left-right'):
         """
 
         :param img: img cv2 object
@@ -32,7 +39,9 @@ class Lane2CntBBox:
         :param right_padding: right blank area width in pixel
         :param compare_method:
         """
-        self.img = img
+        self.img = img.img
+        self.img_width = img.img_width
+        self.img_height = img.img_height
         self.img_name = img_name
         self.left_pixel = left_pixel
         self.top_pixel = top_pixel
@@ -47,8 +56,34 @@ class Lane2CntBBox:
         self.cnts = cv2.findContours(self.thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         self.cnts = imutils.grab_contours(self.cnts)
         self.cnts = [
-            # Contour(c, self.left_pixel)
+            Contour(c, self.left_pixel, self.top_pixel, img_parent=self)
+            for c in self.cnts
         ]
+        self.cnts = [c for c in self.cnts if c.is_answer()]
+        self.cnts.sort()
+
+    def disp_gray(self, msg=None):
+        if msg is None:
+            msg = f'gray scale image of {self.img_name}'
+        cv2.imshow(msg, self.gray)
+
+    def disp_blurred(self,msg=None):
+        if msg is None:
+            msg = f'blurred image of {self.img_name}'
+        cv2.imshow(msg, self.blurred)
+
+    def disp_thresh(self,msg=None):
+        if msg is None:
+            msg = f'threshold image of {self.img_name}'
+        cv2.imshow(msg, self.thresh)
+
+    def disp_answer_rect_marked(self,msg=None):
+        _grayMarked = self.gray.copy()
+        for c in self.cnts:
+            cv2.rectangle(_grayMarked, (c.x, c.y), (c.x + c.w, c.y + c.h), (0, 0, 0), 2)
+        if msg is None:
+            msg = f'answer marked image of {self.img_name}'
+        cv2.imshow(msg, _grayMarked)
 
 class Contour:
     DEBUG=False
@@ -109,11 +144,7 @@ class Contour:
         else:
             return False
 
-class ImageObj:
-    def __init__(self,image_path:str):
-        assert os.path.exists(image_path)
-        self.image_path = image_path
-        self.image_full = cv2.imread(image_path)
-        self.image_width = self.image_full.shape[1]
-        self.image_height = self.image_full.shape[0]
 
+
+img = ImageFull(os.path.join('dataset','口腔医学专业英语补考','img1.jpg'))
+img.display_image()
